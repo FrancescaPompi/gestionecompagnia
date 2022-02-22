@@ -10,9 +10,16 @@ public class Compagnia {
 	private long fatturatoAnnuo;
 	private Date dataFondazione;
 	private List<Impiegato> impiegati;
-
+	
 	public Compagnia() {
+		
+	}
 
+	public Compagnia(String ragioneSociale, long fatturatoAnnuo, Date dataFondazione) {
+		super();
+		this.ragioneSociale = ragioneSociale;
+		this.fatturatoAnnuo = fatturatoAnnuo;
+		this.dataFondazione = dataFondazione;
 	}
 
 	public Compagnia(Long id, String ragioneSociale, long fatturatoAnnuo, Date dataFondazione,

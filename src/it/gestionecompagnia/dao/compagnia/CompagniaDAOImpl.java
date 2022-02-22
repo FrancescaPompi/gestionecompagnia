@@ -1,6 +1,7 @@
 package it.gestionecompagnia.dao.compagnia;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -44,8 +45,32 @@ public class CompagniaDAOImpl extends AbstractMySQLDAO implements CompagniaDAO{
 
 	@Override
 	public Compagnia get(Long idInput) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+
+		if (idInput == null || idInput < 1)
+			throw new Exception("Valore di input non ammesso.");		
+		
+		Compagnia result = null;
+		try (PreparedStatement ps = connection.prepareStatement("select * from gestionecompagnia.compagnia where id=?")) {
+			ps.setLong(1, idInput);
+			
+			try (ResultSet rs = ps.executeQuery()) {
+				if(rs.next()) {
+					result = new Compagnia();
+					result.setId(rs.getLong("id"));
+					result.setRagioneSociale("ragioneSociale");
+					result.setFatturatoAnnuo(rs.getLong("fatturatoAnnuo"));
+					result.setDataFondazione(rs.getDate("dataFondazione"));
+				} else {
+					result = null;
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
 	}
 
 	@Override
@@ -56,8 +81,24 @@ public class CompagniaDAOImpl extends AbstractMySQLDAO implements CompagniaDAO{
 
 	@Override
 	public int insert(Compagnia input) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+
+		if (input == null)
+			throw new Exception("Valore di input non ammesso.");
+
+		int result = 0;
+		try (PreparedStatement ps = connection.prepareStatement(
+				"INSERT INTO gestionecompagnia.compagnia (ragioneSociale, fatturatoAnnuo, dataFondazione) VALUES (?, ?, ?);")) {
+			ps.setString(1, input.getRagioneSociale());
+			ps.setLong(2, input.getFatturatoAnnuo());
+			ps.setDate(3, new java.sql.Date(input.getDataFondazione().getTime()));
+			result = ps.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
 	}
 
 	@Override
