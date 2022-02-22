@@ -120,14 +120,66 @@ public class CompagniaDAOImpl extends AbstractMySQLDAO implements CompagniaDAO{
 
 	@Override
 	public int delete(Compagnia input) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+
+		if (input == null || input.getId() == null || input.getId() < 1)
+			throw new Exception("Valore di input non ammesso.");
+
+		int result = 0;
+		try (PreparedStatement ps = connection.prepareStatement("DELETE FROM gestionecompagnia.compagnia WHERE ID=?")) {
+			ps.setLong(1, input.getId());
+			result = ps.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
 	}
 
 	@Override
 	public List<Compagnia> findByExample(Compagnia input) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+		
+		if (input == null)
+			throw new Exception("Valore di input non ammesso.");
+		
+		Compagnia compagniaTemp = null;
+		List<Compagnia> result = new ArrayList<Compagnia>();
+		String query = "select * from gestionecompagnia.compagnia where ";
+		String addQuery = "";
+		boolean usaRagioneSociale = input.getRagioneSociale() != null && !input.getRagioneSociale().isEmpty();
+		boolean usaFatturatoAnnuo = input.getFatturatoAnnuo() != 0;
+		boolean usaDataFondazione = input.getDataFondazione() != null;
+		
+		if(usaRagioneSociale) {
+			addQuery += (addQuery.isEmpty() ? "" : " and ") + "ragioneSociale='" + input.getRagioneSociale() + "'";
+		}
+		if(usaFatturatoAnnuo) {
+			addQuery += (addQuery.isEmpty() ? "" : " and ") + "fatturatoAnnuo='" + input.getFatturatoAnnuo() + "'";
+		}
+		if(usaDataFondazione) {
+			addQuery += (addQuery.isEmpty() ? "" : " and ") + "dataFondazione='" + input.getDataFondazione() + "'";
+		}
+		
+		query += addQuery;
+		try (PreparedStatement ps = connection.prepareStatement(query)) {
+			try (ResultSet rs = ps.executeQuery();) {
+				while (rs.next()) {
+					compagniaTemp = new Compagnia();
+					compagniaTemp.setId(rs.getLong("id"));
+					compagniaTemp.setRagioneSociale(rs.getString("ragioneSociale"));
+					compagniaTemp.setFatturatoAnnuo(rs.getLong("fatturatoAnnuo"));
+					compagniaTemp.setDataFondazione(rs.getDate("dataFondazione"));
+					result.add(compagniaTemp);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
 	}
 
 	@Override

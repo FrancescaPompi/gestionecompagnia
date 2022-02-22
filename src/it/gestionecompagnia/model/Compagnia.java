@@ -14,6 +14,11 @@ public class Compagnia {
 	public Compagnia() {
 		
 	}
+	
+	public Compagnia(String ragioneSociale) {
+		super();
+		this.ragioneSociale = ragioneSociale;
+	}
 
 	public Compagnia(String ragioneSociale, long fatturatoAnnuo, Date dataFondazione) {
 		super();
@@ -71,5 +76,9 @@ public class Compagnia {
 	public void setImpiegati(List<Impiegato> impiegati) {
 		this.impiegati = impiegati;
 	}
-
+	
+	@Override
+	public String toString() {
+		return "Compagnia [id=" + id + ", ragioneSociale=" + ragioneSociale + ", fatturatoAnnuo=" + fatturatoAnnuo + ", dataFondazione=" + dataFondazione + "]";
+	}
 }
