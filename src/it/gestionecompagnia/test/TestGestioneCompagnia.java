@@ -40,12 +40,14 @@ public class TestGestioneCompagnia {
 //			System.out.println("Dopo l'eliminazione: in tabella compagnia ci sono " + compagniaDAOInstance.list().size() + " elementi.");
 //			
 //			testFindByExample(compagniaDAOInstance);
+//			
+//			System.out.println("In tabella impiegato ci sono "+ impiegatoDAOInstance.list().size() + " elementi.");
+//			
+//			testInsertiImpiegato(impiegatoDAOInstance);
+//			System.out.println("In tabella impiegato ci sono "+ impiegatoDAOInstance.list().size() + " elementi.");
 			
+			testUpdateImpiegato(impiegatoDAOInstance);
 			System.out.println("In tabella impiegato ci sono "+ impiegatoDAOInstance.list().size() + " elementi.");
-			
-			testInsertiImpiegato(impiegatoDAOInstance);
-			System.out.println("In tabella impiegato ci sono "+ impiegatoDAOInstance.list().size() + " elementi.");
-			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -128,5 +130,21 @@ public class TestGestioneCompagnia {
 			throw new RuntimeException("testInsertiImpiegato : FAILED, non è stato inserito alcun elemento");
 
 		System.out.println(".......testInsertiImpiegato fine: PASSED.............");
+	}
+	
+	private static void testUpdateImpiegato(ImpiegatoDAO impiegatoDAOInstance) throws Exception {
+		System.out.println(".......testUpdateImpiegato inizio.............");
+		
+		List<Impiegato> elencoVociPresenti = impiegatoDAOInstance.list();
+		Impiegato impiegatoInput = elencoVociPresenti.get(0);
+		int quantiElementiInseriti = impiegatoDAOInstance.insert(impiegatoInput);
+		if (quantiElementiInseriti < 1)
+			throw new RuntimeException("testUpdateImpiegato : FAILED, non è stato inserito alcun elemento");
+		
+		int quantiElementiAggiornati = impiegatoDAOInstance.update(impiegatoInput);
+		if (quantiElementiAggiornati < 1)
+			throw new RuntimeException("testUpdateImpiegato : FAILED, non è stato aggiornato alcun elemento");
+		
+		System.out.println(".......testUpdateImpiegato fine: PASSED.............");
 	}
 }

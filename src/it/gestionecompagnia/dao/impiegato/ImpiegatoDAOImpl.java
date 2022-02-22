@@ -48,14 +48,60 @@ public class ImpiegatoDAOImpl extends AbstractMySQLDAO implements ImpiegatoDAO{
 
 	@Override
 	public Impiegato get(Long idInput) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+
+		if (idInput == null || idInput < 1)
+			throw new Exception("Valore di input non ammesso.");
+
+		Impiegato result = null;
+		try (PreparedStatement ps = connection.prepareStatement("select * from gestionecompagnia.impiegato where id=?")) {
+
+			ps.setLong(1, idInput);
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					result = new Impiegato();
+					result.setNome(rs.getString("NOME"));
+					result.setCognome(rs.getString("COGNOME"));
+					result.setCodiceFiscale(rs.getString("codiceFiscale"));
+					result.setDataDiNascita(rs.getDate("dataDiNascita"));
+					result.setDataAssunzione(rs.getDate("dataAssunzione"));
+					result.setId(rs.getLong("id"));;
+				} else {
+					result = null;
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
 	}
 
 	@Override
 	public int update(Impiegato input) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+
+		if (input == null || input.getId() == null || input.getId() < 1)
+			throw new Exception("Valore di input non ammesso.");
+
+		int result = 0;
+		try (PreparedStatement ps = connection.prepareStatement(
+				"UPDATE gestionecompagnia.impiegato SET nome=?, cognome=?, codiceFiscale=?, dataDiNascita=?, dataAssunzione=? where id=?;")) {
+			ps.setString(1, input.getNome());
+			ps.setString(2, input.getCognome());
+			ps.setString(3, input.getCodiceFiscale());
+			ps.setDate(4, new java.sql.Date(input.getDataDiNascita().getTime()));
+			ps.setDate(5, new java.sql.Date(input.getDataAssunzione().getTime()));
+			ps.setLong(6, input.getId());
+			result = ps.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
 	}
 
 	@Override
