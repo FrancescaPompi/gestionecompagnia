@@ -7,7 +7,10 @@ import java.util.List;
 
 import it.gestionecompagnia.dao.compagnia.CompagniaDAO;
 import it.gestionecompagnia.dao.compagnia.CompagniaDAOImpl;
+import it.gestionecompagnia.dao.impiegato.ImpiegatoDAO;
+import it.gestionecompagnia.dao.impiegato.ImpiegatoDAOImpl;
 import it.gestionecompagnia.model.Compagnia;
+import it.gestionecompagnia.model.Impiegato;
 import it.gestionecompagnia.connection.MyConnection;
 import it.gestionecompagnia.dao.Constants;
 
@@ -16,10 +19,13 @@ public class TestGestioneCompagnia {
 	public static void main(String[] args) {
 		
 		CompagniaDAO compagniaDAOInstance = null;
+		ImpiegatoDAO impiegatoDAOInstance = null;
 		
 		try (Connection connection = MyConnection.getConnection(Constants.DRIVER_NAME, Constants.CONNECTION_URL)) {
 			
 			compagniaDAOInstance = new CompagniaDAOImpl(connection);
+			impiegatoDAOInstance = new ImpiegatoDAOImpl(connection);
+			
 			
 //			System.out.println("In tabella compagnia ci sono " + compagniaDAOInstance.list().size() + " elementi.");
 //			
@@ -34,6 +40,12 @@ public class TestGestioneCompagnia {
 //			System.out.println("Dopo l'eliminazione: in tabella compagnia ci sono " + compagniaDAOInstance.list().size() + " elementi.");
 //			
 //			testFindByExample(compagniaDAOInstance);
+			
+			System.out.println("In tabella impiegato ci sono "+ impiegatoDAOInstance.list().size() + " elementi.");
+			
+			testInsertiImpiegato(impiegatoDAOInstance);
+			System.out.println("In tabella impiegato ci sono "+ impiegatoDAOInstance.list().size() + " elementi.");
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -106,5 +118,15 @@ public class TestGestioneCompagnia {
 		}
 		System.out.println(".......testFindByExample fine: PASSED.............");
 	}
+	
+	
+	private static void testInsertiImpiegato(ImpiegatoDAO impiegatoDAOInstance) throws Exception {
+		System.out.println(".......testInsertiImpiegato inizio.............");
+		Impiegato marioRossi = new Impiegato("Mario", "Rossi", "mrrss57", new SimpleDateFormat("dd-MM-yyyy").parse("03-02-1945"), new SimpleDateFormat("dd-MM-yyyy").parse("03-01-2020"));
+		int quantiElementiInseriti = impiegatoDAOInstance.insert(marioRossi);
+		if (quantiElementiInseriti < 1)
+			throw new RuntimeException("testInsertiImpiegato : FAILED, non è stato inserito alcun elemento");
 
+		System.out.println(".......testInsertiImpiegato fine: PASSED.............");
+	}
 }

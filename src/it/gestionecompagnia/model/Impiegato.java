@@ -16,6 +16,15 @@ public class Impiegato {
 
 	}
 
+	public Impiegato(String nome, String cognome, String codiceFiscale, Date dataDiNascita, Date dataAssunzione) {
+		super();
+		this.nome = nome;
+		this.cognome = cognome;
+		this.codiceFiscale = codiceFiscale;
+		this.dataDiNascita = dataDiNascita;
+		this.dataAssunzione = dataAssunzione;
+	}
+
 	public Impiegato(Long id, String nome, String cognome, String codiceFiscale, Date dataDiNascita,
 			Date dataAssunzione, Compagnia compagnia) {
 		super();
@@ -84,4 +93,9 @@ public class Impiegato {
 		this.compagnia = compagnia;
 	}
 
+	@Override
+	public String toString() {
+		return "Impiegato [id=" + id + ", nome=" + nome + ", cognome=" + cognome + ", codiceFiscale=" + codiceFiscale
+				+ ", dataDiNascita=" + dataDiNascita + ", dataAssunzione=" + dataAssunzione + "]";
+	}
 }
