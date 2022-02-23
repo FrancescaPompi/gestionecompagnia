@@ -48,10 +48,13 @@ public class TestGestioneCompagnia {
 //			
 //			testUpdateImpiegato(impiegatoDAOInstance);
 //			System.out.println("In tabella impiegato ci sono "+ impiegatoDAOInstance.list().size() + " elementi.");
+//			
+//			System.out.println("Prima dell'eliminazione: in tabella compagnia ci sono " + impiegatoDAOInstance.list().size() + " elementi.");
+//			testDeleteImpiegato(impiegatoDAOInstance);
+//			System.out.println("Dopo l'eliminazione: in tabella compagnia ci sono " + impiegatoDAOInstance.list().size() + " elementi.");
 			
-			System.out.println("Prima dell'eliminazione: in tabella compagnia ci sono " + impiegatoDAOInstance.list().size() + " elementi.");
-			testDeleteImpiegato(impiegatoDAOInstance);
-			System.out.println("Dopo l'eliminazione: in tabella compagnia ci sono " + impiegatoDAOInstance.list().size() + " elementi.");
+			testFindByExample(impiegatoDAOInstance);
+			System.out.println("In tabella impiegato ci sono "+ impiegatoDAOInstance.list().size() + " elementi.");
 			
 			
 		} catch (Exception e) {
@@ -173,5 +176,24 @@ public class TestGestioneCompagnia {
 			throw new RuntimeException("testDeleteImpiegato : FAILED, la rimozione non è avvenuta");
 
 		System.out.println(".......testDeleteImpiegato fine: PASSED.............");
+	}
+	
+	private static void testFindByExample(ImpiegatoDAO impiegatoDAOInstance) throws Exception {
+		System.out.println(".......testFindByExample inizio.............");
+		
+		List<Impiegato> elencoVociPresenti = impiegatoDAOInstance.list();
+		if (elencoVociPresenti.size() < 1)
+			throw new RuntimeException("testFindByExample : FAILED, non ci sono voci sul DB");
+		
+		Impiegato marioRossi = new Impiegato("Mario", "Rossi");
+		
+		List<Impiegato> elencoVociCreatiPerExample = impiegatoDAOInstance.findByExample(marioRossi);
+		for(Impiegato impiegatoItem : elencoVociCreatiPerExample) {
+			System.out.println(impiegatoItem);
+		}
+		if(elencoVociCreatiPerExample.size() < 1) {
+			throw new RuntimeException("testFindByExample : FAILED, impiegato non trovato");
+		}
+		System.out.println(".......testFindByExample fine: PASSED.............");
 	}
 }

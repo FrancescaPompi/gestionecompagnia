@@ -149,8 +149,57 @@ public class ImpiegatoDAOImpl extends AbstractMySQLDAO implements ImpiegatoDAO{
 
 	@Override
 	public List<Impiegato> findByExample(Impiegato input) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+		
+		if (input == null)
+			throw new Exception("Valore di input non ammesso.");
+		
+		Impiegato impiegatoTemp = null;
+		List<Impiegato> result = new ArrayList<Impiegato>();
+		String query = "select * from gestionecompagnia.impiegato where ";
+		String addQuery = "";
+		boolean usaNome = input.getNome() != null && !input.getNome().isEmpty();
+		boolean usaCognome = input.getCognome() != null && !input.getCognome().isEmpty();
+		boolean usaCodiceFiscale = input.getCodiceFiscale() != null && !input.getCodiceFiscale().isEmpty();
+		boolean usaDataDiNascita = input.getDataDiNascita() != null;
+		boolean usaDataAssunzione = input.getDataAssunzione() != null;
+		
+		if(usaNome) {
+			addQuery += (addQuery.isEmpty() ? "" : " and ") + "nome='" + input.getNome() + "'";
+		}
+		if(usaCognome) {
+			addQuery += (addQuery.isEmpty() ? "" : " and ") + "cognome='" + input.getCognome() + "'";
+		}
+		if(usaCodiceFiscale) {
+			addQuery += (addQuery.isEmpty() ? "" : " and ") + "login='" + input.getCodiceFiscale() + "'";
+		}
+		if(usaDataDiNascita) {
+			addQuery += (addQuery.isEmpty() ? "" : " and ") + "password='" + input.getDataDiNascita() + "'";
+		}
+		if(usaDataAssunzione) {
+			addQuery += (addQuery.isEmpty() ? "" : " and ") + "dateCreated='" + input.getDataAssunzione() + "'";
+		}
+		
+		query += addQuery;
+		try (PreparedStatement ps = connection.prepareStatement(query)) {
+			try (ResultSet rs = ps.executeQuery();) {
+				while (rs.next()) {
+					impiegatoTemp = new Impiegato();
+					impiegatoTemp.setId(rs.getLong("id"));
+					impiegatoTemp.setNome(rs.getString("nome"));
+					impiegatoTemp.setCognome(rs.getString("cognome"));
+					impiegatoTemp.setCodiceFiscale(rs.getString("codiceFiscale"));
+					impiegatoTemp.setDataDiNascita(rs.getDate("dataDiNascita"));
+					impiegatoTemp.setDataAssunzione(rs.getDate("dataAssunzione"));
+					result.add(impiegatoTemp);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
 	}
 
 	@Override
