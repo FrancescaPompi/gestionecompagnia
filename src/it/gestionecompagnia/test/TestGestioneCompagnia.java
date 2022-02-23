@@ -45,9 +45,14 @@ public class TestGestioneCompagnia {
 //			
 //			testInsertiImpiegato(impiegatoDAOInstance);
 //			System.out.println("In tabella impiegato ci sono "+ impiegatoDAOInstance.list().size() + " elementi.");
+//			
+//			testUpdateImpiegato(impiegatoDAOInstance);
+//			System.out.println("In tabella impiegato ci sono "+ impiegatoDAOInstance.list().size() + " elementi.");
 			
-			testUpdateImpiegato(impiegatoDAOInstance);
-			System.out.println("In tabella impiegato ci sono "+ impiegatoDAOInstance.list().size() + " elementi.");
+			System.out.println("Prima dell'eliminazione: in tabella compagnia ci sono " + impiegatoDAOInstance.list().size() + " elementi.");
+			testDeleteImpiegato(impiegatoDAOInstance);
+			System.out.println("Dopo l'eliminazione: in tabella compagnia ci sono " + impiegatoDAOInstance.list().size() + " elementi.");
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -146,5 +151,27 @@ public class TestGestioneCompagnia {
 			throw new RuntimeException("testUpdateImpiegato : FAILED, non è stato aggiornato alcun elemento");
 		
 		System.out.println(".......testUpdateImpiegato fine: PASSED.............");
+	}
+	
+	private static void testDeleteImpiegato(ImpiegatoDAO impiegatoDAOInstance) throws Exception {
+		System.out.println(".......testDeleteImpiegato inizio.............");
+		
+		int quantiElementiInseriti = impiegatoDAOInstance.insert(new Impiegato("Roberto", "Verdi", "rbtvrd34", new SimpleDateFormat("dd-MM-yyyy").parse("03-02-1945"), new SimpleDateFormat("dd-MM-yyyy").parse("03-01-2020")));
+		if (quantiElementiInseriti < 1)
+			throw new RuntimeException("testDeleteImpiegato : FAILED, non è stato inserito alcun elemento");
+		
+		List<Impiegato> elencoVociPresenti = impiegatoDAOInstance.list();
+		int numeroElementiPresentiPrimaDellaRimozione = elencoVociPresenti.size();
+		if (numeroElementiPresentiPrimaDellaRimozione < 1)
+			throw new RuntimeException("testDeleteImpiegato : FAILED, non ci sono voci sul DB");
+		
+		Impiegato ultimoDellaLista = elencoVociPresenti.get(numeroElementiPresentiPrimaDellaRimozione - 1);
+		impiegatoDAOInstance.delete(ultimoDellaLista);
+		
+		int numeroElementiPresentiDopoDellaRimozione = impiegatoDAOInstance.list().size();
+		if (numeroElementiPresentiDopoDellaRimozione != numeroElementiPresentiPrimaDellaRimozione - 1)
+			throw new RuntimeException("testDeleteImpiegato : FAILED, la rimozione non è avvenuta");
+
+		System.out.println(".......testDeleteImpiegato fine: PASSED.............");
 	}
 }

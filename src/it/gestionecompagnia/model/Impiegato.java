@@ -15,6 +15,12 @@ public class Impiegato {
 	public Impiegato() {
 
 	}
+	
+	public Impiegato(String nome, String cognome) {
+		super();
+		this.nome = nome;
+		this.cognome = cognome;
+	}
 
 	public Impiegato(String nome, String cognome, String codiceFiscale, Date dataDiNascita, Date dataAssunzione) {
 		super();
