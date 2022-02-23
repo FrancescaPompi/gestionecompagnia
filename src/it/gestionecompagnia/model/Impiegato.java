@@ -31,10 +31,9 @@ public class Impiegato {
 		this.dataAssunzione = dataAssunzione;
 	}
 
-	public Impiegato(Long id, String nome, String cognome, String codiceFiscale, Date dataDiNascita,
+	public Impiegato(String nome, String cognome, String codiceFiscale, Date dataDiNascita,
 			Date dataAssunzione, Compagnia compagnia) {
 		super();
-		this.id = id;
 		this.nome = nome;
 		this.cognome = cognome;
 		this.codiceFiscale = codiceFiscale;

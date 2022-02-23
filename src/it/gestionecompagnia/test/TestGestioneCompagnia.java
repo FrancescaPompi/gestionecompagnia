@@ -2,6 +2,7 @@ package it.gestionecompagnia.test;
 
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -52,9 +53,17 @@ public class TestGestioneCompagnia {
 //			System.out.println("Prima dell'eliminazione: in tabella compagnia ci sono " + impiegatoDAOInstance.list().size() + " elementi.");
 //			testDeleteImpiegato(impiegatoDAOInstance);
 //			System.out.println("Dopo l'eliminazione: in tabella compagnia ci sono " + impiegatoDAOInstance.list().size() + " elementi.");
+//			
+//			testFindByExample(impiegatoDAOInstance);
+//			System.out.println("In tabella impiegato ci sono "+ impiegatoDAOInstance.list().size() + " elementi.");
 			
-			testFindByExample(impiegatoDAOInstance);
-			System.out.println("In tabella impiegato ci sono "+ impiegatoDAOInstance.list().size() + " elementi.");
+			testFindAllByDataAssunzioneMaggioreDi(compagniaDAOInstance, impiegatoDAOInstance);
+			
+			findAllByRagioneSocialeContiene(compagniaDAOInstance);
+			
+			testFindAllByCodFisImpiegatoContiene(compagniaDAOInstance, impiegatoDAOInstance);
+			
+			testFindAllByCompagnia(compagniaDAOInstance, impiegatoDAOInstance);
 			
 			
 		} catch (Exception e) {
@@ -195,5 +204,88 @@ public class TestGestioneCompagnia {
 			throw new RuntimeException("testFindByExample : FAILED, impiegato non trovato");
 		}
 		System.out.println(".......testFindByExample fine: PASSED.............");
+	}
+	
+	private static void testFindAllByDataAssunzioneMaggioreDi(CompagniaDAO compagniaDAOInstance, ImpiegatoDAO impiegatoDAOInstance) throws Exception {
+		System.out.println(".......testFindAllByDataAssunzioneMaggioreDi inizio.............");
+
+		Date dataAssunzione = new SimpleDateFormat("dd-MM-yyyy").parse("03-01-2022");
+		Date dataAssunzioneIlGiornoPrima = new SimpleDateFormat("dd-MM-yyyy").parse("02-01-2022");
+		
+		Compagnia compagniaDiMaria = new Compagnia("Compagnia di Maria", 1000, new SimpleDateFormat("dd-MM-yyyy").parse("22-01-1950"));
+		Impiegato marioRossi = new Impiegato("Mario", "Rossi", "mrorss94", new SimpleDateFormat("dd-MM-yyyy").parse("03-02-1945"), dataAssunzione, compagniaDiMaria);
+		Impiegato giuseppeBianchi = new Impiegato("Giuseppe", "Bianchi", "gspbnc93", new SimpleDateFormat("dd-MM-yyyy").parse("23-01-1993"), dataAssunzione, compagniaDiMaria);
+		List<Impiegato> impiegatiCompagniaScelta = Arrays.asList(marioRossi, giuseppeBianchi);
+		
+		
+		int quantiElementiInseriti = impiegatoDAOInstance.insert(marioRossi);
+		if (quantiElementiInseriti < 1)
+			throw new RuntimeException("testFindAllByDataAssunzioneMaggioreDi : FAILED, user non inserito");
+
+		quantiElementiInseriti = impiegatoDAOInstance.insert(giuseppeBianchi);
+		if (quantiElementiInseriti < 1)
+			throw new RuntimeException("testFindAllByDataAssunzioneMaggioreDi : FAILED, user non inserito");
+		
+		compagniaDiMaria.setImpiegati(impiegatiCompagniaScelta);
+
+		List<Compagnia> elencoVociCreateDopoDataScelta = compagniaDAOInstance.findAllByDataAssunzioneMaggioreDi(dataAssunzioneIlGiornoPrima);
+		
+
+		System.out.println(".......testFindAllByDataAssunzioneMaggioreDi fine: PASSED.............");
+	}
+	
+	private static void findAllByRagioneSocialeContiene(CompagniaDAO compagniaDAOInstance) throws Exception {
+		System.out.println(".......findAllByRagioneSocialeContiene inizio.............");
+		
+		List<Compagnia> elencoVociPresenti = compagniaDAOInstance.list();
+		if (elencoVociPresenti.size() < 1)
+			throw new RuntimeException("findAllByRagioneSocialeContiene : FAILED, non ci sono voci sul DB");
+		
+		String stringaInput = "maria";
+		
+		if(compagniaDAOInstance.findAllByRagioneSocialeContiene(stringaInput) == null) {
+			throw new RuntimeException("findAllByRagioneSocialeContiene : FAILED, errore.");
+		}
+		System.out.println(".......findAllByRagioneSocialeContiene fine: PASSED.............");
+	}
+	
+	private static void testFindAllByCodFisImpiegatoContiene(CompagniaDAO compagniaDAOInstance, ImpiegatoDAO impiegatoDAOInstance) throws Exception {
+		System.out.println(".......testFindAllByCodFisImpiegatoContiene inizio.............");
+		
+		List<Compagnia> elencoVociPresentiCompagnia = compagniaDAOInstance.list();
+		if (elencoVociPresentiCompagnia.size() < 1)
+			throw new RuntimeException("testFindAllByCodFisImpiegatoContiene : FAILED, non ci sono voci sul DB");
+		
+		List<Impiegato> elencoVociPresentiImpiegato = impiegatoDAOInstance.list();
+		if (elencoVociPresentiImpiegato.size() < 1)
+			throw new RuntimeException("testFindAllByCodFisImpiegatoContiene : FAILED, non ci sono voci sul DB");
+		
+		String stringaInput = "p";
+		
+		if(compagniaDAOInstance.findAllByCodFisImpiegatoContiene(stringaInput) == null) {
+			throw new RuntimeException("testFindAllByCodFisImpiegatoContiene : FAILED, errore.");
+		}
+		System.out.println(".......testFindAllByCodFisImpiegatoContiene fine: PASSED.............");
+	}
+	
+	private static void testFindAllByCompagnia(CompagniaDAO compagniaDAOInstance, ImpiegatoDAO impiegatoDAOInstance) throws Exception {
+		System.out.println(".......testFindAllByCompagnia inizio.............");
+		
+		List<Compagnia> elencoVociPresentiCompagnia = compagniaDAOInstance.list();
+		if (elencoVociPresentiCompagnia.size() < 1)
+			throw new RuntimeException("testFindAllByCodFisImpiegatoContiene : FAILED, non ci sono voci sul DB");
+		
+		List<Impiegato> elencoVociPresentiImpiegato = impiegatoDAOInstance.list();
+		if (elencoVociPresentiImpiegato.size() < 1)
+			throw new RuntimeException("testFindAllByCodFisImpiegatoContiene : FAILED, non ci sono voci sul DB");
+		
+		Compagnia compagniaDiFabio = new Compagnia("Compagnia di Fabio", 500, new SimpleDateFormat("dd-MM-yyyy").parse("22-01-1950"));
+		compagniaDiFabio.setId(700l);
+		compagniaDAOInstance.insert(compagniaDiFabio);
+		
+		if(impiegatoDAOInstance.findAllByCompagnia(compagniaDiFabio) == null) {
+			throw new RuntimeException("testFindAllByCodFisImpiegatoContiene : FAILED, errore.");
+		}
+		System.out.println(".......testFindAllByCodFisImpiegatoContiene fine: PASSED.............");
 	}
 }

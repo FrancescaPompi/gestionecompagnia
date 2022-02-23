@@ -184,20 +184,101 @@ public class CompagniaDAOImpl extends AbstractMySQLDAO implements CompagniaDAO{
 
 	@Override
 	public List<Compagnia> findAllByDataAssunzioneMaggioreDi(Date dataAssunzioneInput) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+
+		if (dataAssunzioneInput == null)
+			throw new Exception("Valore di input non ammesso.");
+
+		ArrayList<Compagnia> result = new ArrayList<Compagnia>();
+		Compagnia compagniaTemp = null;
+
+		try (PreparedStatement ps = connection.prepareStatement("select * from gestionecompagnia.compagnia c inner join gestionecompagnia.impiegato i on c.id = i.compagnia_id where i.dataAssunzione > ?;")) {
+			
+			ps.setDate(1, new java.sql.Date(dataAssunzioneInput.getTime()));
+
+			try (ResultSet rs = ps.executeQuery();) {
+				while (rs.next()) {
+					compagniaTemp = new Compagnia();
+					compagniaTemp.setId(rs.getLong("id"));
+					compagniaTemp.setRagioneSociale(rs.getString("ragioneSociale"));
+					compagniaTemp.setFatturatoAnnuo(rs.getLong("fatturatoAnnuo"));
+					compagniaTemp.setDataFondazione(rs.getDate("dataFondazione"));
+					result.add(compagniaTemp);
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
 	}
 
 	@Override
 	public List<Compagnia> findAllByRagioneSocialeContiene(String stringaInput) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+
+		if (stringaInput == null)
+			throw new Exception("Valore di input non ammesso.");
+
+		ArrayList<Compagnia> result = new ArrayList<Compagnia>();
+		Compagnia compagniaTemp = null;
+
+		try (PreparedStatement ps = connection.prepareStatement("select * from gestionecompagnia.compagnia c where c.ragioneSociale like ?")) {
+			
+			ps.setString(1, "'%" + stringaInput + "%'");
+
+			try (ResultSet rs = ps.executeQuery();) {
+				while (rs.next()) {
+					compagniaTemp = new Compagnia();
+					compagniaTemp.setId(rs.getLong("id"));
+					compagniaTemp.setRagioneSociale(rs.getString("ragioneSociale"));
+					compagniaTemp.setFatturatoAnnuo(rs.getLong("fatturatoAnnuo"));
+					compagniaTemp.setDataFondazione(rs.getDate("dataFondazione"));
+					result.add(compagniaTemp);
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
 	}
 
 	@Override
 	public List<Compagnia> findAllByCodFisImpiegatoContiene(String codiceFiscaleInput) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+
+		if (codiceFiscaleInput == null)
+			throw new Exception("Valore di input non ammesso.");
+
+		ArrayList<Compagnia> result = new ArrayList<Compagnia>();
+		Compagnia compagniaTemp = null;
+
+		try (PreparedStatement ps = connection.prepareStatement("select * from gestionecompagnia.compagnia c inner join gestionecompagnia.impiegato i on c.id = i.compagnia_id where i.codiceFiscale like ?")) {
+			
+			ps.setString(1, "'%" + codiceFiscaleInput + "%'");
+
+			try (ResultSet rs = ps.executeQuery();) {
+				while (rs.next()) {
+					compagniaTemp = new Compagnia();
+					compagniaTemp.setId(rs.getLong("id"));
+					compagniaTemp.setRagioneSociale(rs.getString("ragioneSociale"));
+					compagniaTemp.setFatturatoAnnuo(rs.getLong("fatturatoAnnuo"));
+					compagniaTemp.setDataFondazione(rs.getDate("dataFondazione"));
+					result.add(compagniaTemp);
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
 	}
 
 }
